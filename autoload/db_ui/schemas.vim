@@ -110,20 +110,11 @@ let s:oracle_foreign_key_query = "
       \ FROM all_cons_columns RFRD
       \ JOIN all_constraints CON ON RFRD.constraint_name = CON.r_constraint_name
       \ JOIN all_cons_columns RFRING ON CON.constraint_name = RFRING.constraint_name
-      \ JOIN all_users U ON CON.owner = U.username
       \ WHERE CON.constraint_type = 'R'
-      \ AND U.common = 'NO'
       \ AND RFRING.column_name = '{col_name}'"
 let s:oracle_schemes_tables_query = "
       \SELECT T.owner, T.table_name
-      \ FROM (
-      \ SELECT owner, table_name
-      \ FROM all_tables
-      \ UNION SELECT owner, view_name AS \"table_name\"
-      \ FROM all_views
-      \ ) T
-      \ JOIN all_users U ON T.owner = U.username
-      \ WHERE U.common = 'NO'
+      \ FROM all_tables T
       \ ORDER BY T.table_name"
 let s:oracle = {
       \   'cell_line_number': 1,
@@ -135,7 +126,7 @@ let s:oracle = {
       \   'parse_virtual_results': {results, min_len -> s:results_parser(results[15:-4], '\s\s\+', min_len)},
       \   'requires_stdin': v:true,
       \   'quote': v:true,
-      \   'schemes_query': printf(s:oracle_args, "SELECT username FROM all_users WHERE common = 'NO' ORDER BY username"),
+      \   'schemes_query': printf(s:oracle_args, "SELECT username FROM all_users ORDER BY username"),
       \   'schemes_tables_query': printf(s:oracle_args, s:oracle_schemes_tables_query),
       \   'select_foreign_key_query': printf(s:oracle_args, 'SELECT * FROM "%s"."%s" WHERE "%s" = %s'),
       \   'filetype': 'plsql',

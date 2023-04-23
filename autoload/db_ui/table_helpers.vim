@@ -61,7 +61,7 @@ let s:oracle = {
             \" . s:oracle_from . "\n
             \WHERE\n\t
             \" . s:oracle_qualify_and_order_by . "N.index_name",
-      \ 'List': 'SELECT * FROM "{schema}"."{table}"',
+      \ 'List': 'SELECT * FROM "{schema}"."{table}" FETCH FIRST 16 ROWS ONLY',
       \ 'Primary Keys': printf(s:oracle_key_cmd, 'P'),
       \ 'References': "
             \SELECT\n\t
@@ -73,12 +73,8 @@ let s:oracle = {
             \ON RFRING.constraint_name = N.constraint_name\n
             \JOIN all_cons_columns RFRD\n\t
             \ON N.r_constraint_name = RFRD.constraint_name\n
-            \JOIN all_users U\n\t
-            \ON N.owner = U.username\n
             \WHERE\n\t
             \N.constraint_type = 'R'\n
-            \AND\n\t
-            \U.common = 'NO'\n
             \AND\n\t
             \RFRD.owner = '{schema}'\n
             \AND\n\t
@@ -92,6 +88,7 @@ let s:oracle = {
 for [helper, query] in items(s:oracle)
    let s:oracle[helper] = "
       \SET linesize 4000;\n
+      \SET wrap off;\n
       \SET pagesize 4000;\n\n
       \COLUMN column_name FORMAT a20;\n
       \COLUMN constraint_type FORMAT a20;\n
