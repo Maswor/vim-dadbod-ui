@@ -88,7 +88,6 @@ let s:oracle = {
 for [helper, query] in items(s:oracle)
    let s:oracle[helper] = "
       \SET linesize 4000;\n
-      \SET wrap off;\n
       \SET pagesize 4000;\n\n
       \COLUMN column_name FORMAT a20;\n
       \COLUMN constraint_type FORMAT a20;\n
