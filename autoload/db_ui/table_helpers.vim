@@ -64,25 +64,15 @@ let s:oracle = {
       \ 'List': 'SELECT * FROM "{schema}"."{table}" FETCH FIRST 16 ROWS ONLY',
       \ 'Primary Keys': printf(s:oracle_key_cmd, 'P'),
       \ 'References': "
-            \SELECT\n\t
-            \RFRING.owner,\n\t
-            \RFRING.table_name,\n\t
-            \RFRING.column_name\n
-            \FROM all_cons_columns RFRING\n
-            \JOIN all_constraints N\n\t
-            \ON RFRING.constraint_name = N.constraint_name\n
-            \JOIN all_cons_columns RFRD\n\t
-            \ON N.r_constraint_name = RFRD.constraint_name\n
-            \WHERE\n\t
-            \N.constraint_type = 'R'\n
-            \AND\n\t
-            \RFRD.owner = '{schema}'\n
-            \AND\n\t
-            \RFRD.table_name = '{table}'\n
-            \ORDER BY\n\t
-            \RFRING.owner,\n\t
-            \RFRING.table_name,\n\t
-            \RFRING.column_name",
+            \SELECT a.column_name, c.r_owner, c_pk.table_name r_table_name, c_pk.constraint_name r_pk \n
+            \FROM all_cons_columns a\n
+            \JOIN all_constraints c ON a.owner = c.owner\n\t
+            \AND a.constraint_name = c.constraint_name\n
+            \JOIN all_constraints c_pk ON c.r_owner = c_pk.owner\n\t
+            \AND c.r_constraint_name = c_pk.constraint_name\n
+            \WHERE c.constraint_type = 'R'\n
+            \AND a.table_name = '{table}'\n
+            \AND a.owner = '{schema}'",
       \ }
 
 for [helper, query] in items(s:oracle)
