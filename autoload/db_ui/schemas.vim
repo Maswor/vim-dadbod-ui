@@ -1,8 +1,9 @@
 function! s:results_parser(results, delimiter, min_len) abort
+  let results = map(a:results, 'trim(v:val)')
   if a:min_len ==? 1
-    return filter(a:results, '!empty(trim(v:val))')
+    return filter(results, '!empty(trim(v:val))')
   endif
-  let mapped = map(a:results, {_,row -> filter(split(row, a:delimiter), '!empty(trim(v:val))')})
+  let mapped = map(results, {_,row -> filter(split(row, a:delimiter), '!empty(trim(v:val))')})
   if a:min_len > 1
     return filter(mapped, 'len(v:val) ==? '.a:min_len)
   endif
